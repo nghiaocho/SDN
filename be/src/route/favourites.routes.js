@@ -5,3 +5,5 @@ const {
 } = require("../controller/favourites.controller");
 
 router.get("/count/:bookId", getFavouriteCountByBookId);
+
+module.exports = router;
