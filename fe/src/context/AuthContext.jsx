@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import * as authService from "../service/auth.service";
 
 const AuthContext = createContext(null);
 
@@ -13,39 +14,35 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const initializeAuth = async () => {
+  const initializeAuth = () => {
     const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
 
-    if (!token) {
-      setLoading(false);
-      return;
+    if (token && savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUser(null);
+      }
     }
 
-    try {
-      const user = await authService.getCurrentUser();
-
-      setUser(user);
-    } catch (error) {
-      localStorage.removeItem("token");
-
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
     setUser(data.user);
   };
 
-  const logout = async () => {
-    await authService.logout();
-
+  const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
     setUser(null);
   };

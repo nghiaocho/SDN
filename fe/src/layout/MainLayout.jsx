@@ -1,69 +1,214 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
-import { House, Search, ShoppingCart, User } from "lucide-react";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  House,
+  Search,
+  ShoppingCart,
+  User,
+  LogOut,
+  BookOpen,
+  Mail,
+  MapPin,
+  Phone,
+  ExternalLink,
+  Heart,
+  Globe,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-
-import logo from "../assets/react.svg";
+import { useCart } from "../context/CartContext";
 
 const MainLayout = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { getCartCount } = useCart();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="">
-        <div className=" flex justify-between items-center pt-10 pb-10 border-b-primary-hover border-bg max-w-7xl mx-auto px-4">
-          <div className="flex gap-1 items-center text-2xl ">
-            <img src={logo} />
-            <div>Library SDN302</div>
-          </div>
-          <div className="relative flex items-center ">
-            <div className="absolute z-100 pl-1">
-              <Search className="text-black size-5" />
+      {/* Header */}
+      <header className="main-header">
+        <div className="main-header__inner">
+          {/* Logo */}
+          <Link to="/" className="main-logo">
+            <div className="main-logo__icon">
+              <BookOpen size={22} />
             </div>
+            <span className="main-logo__text">Library SDN302</span>
+          </Link>
+
+          {/* Search */}
+          <div className="main-search">
+            <Search className="main-search__icon" size={17} />
             <input
-              className="bg-white text-black border-radius-sm pl-7 h-8 w-100"
-              placeholder="Search"
+              className="main-search__input"
+              placeholder="Search books, authors, categories..."
             />
           </div>
-          <div className="flex gap-2 items-center text-[12px]">
-            <div className="hover:text-primary flex gap-1 items-center">
-              <House /> <Link to="/">Homepage</Link>
-            </div>
-            <div> | </div>
-            <div className="flex gap-1 items-center">
-              <User />{" "}
-              <Link className="hover:text-primary" to="/login">
-                Log in
-              </Link>{" "}
-              {" / "}
-              {!isAuthenticated ? (
-                <Link className="hover:text-primary" to="/signup">
-                  Sign up
+
+          {/* Navigation */}
+          <nav className="main-nav">
+            <Link
+              to="/"
+              className={`main-nav__link ${isActive("/") ? "main-nav__link--active" : ""}`}
+            >
+              <House size={17} />
+              <span>Home</span>
+            </Link>
+
+            <div className="main-nav__divider" />
+
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile" className="main-nav__user">
+                  <div className="main-nav__avatar">
+                    {getInitials(user?.fullname)}
+                  </div>
+                  <span>{user?.fullname || "User"}</span>
                 </Link>
-              ) : (
-                <Link to="/profile">Profile</Link>
+
+                <button
+                  className="main-nav__logout"
+                  onClick={logout}
+                  title="Logout"
+                >
+                  <LogOut size={17} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="main-nav__link">
+                  <User size={17} />
+                  <span>Log in</span>
+                </Link>
+                <Link to="/register" className="main-nav__link">
+                  <span>Sign up</span>
+                </Link>
+              </>
+            )}
+
+            <div className="main-nav__divider" />
+
+            <Link to="/cart" className="main-nav__cart">
+              <ShoppingCart size={19} />
+              {getCartCount() > 0 && (
+                <span className="main-nav__badge">{getCartCount()}</span>
               )}
-            </div>
-            <div> | </div>
-            <div className="relative ">
-              <div className="bg-error w-4 rounded-2xl h-4 flex justify-center items-center absolute left-4 bottom-4">
-                0
-              </div>
-              <Link to="/rental">
-                <ShoppingCart className="hover:text-primary" />
-              </Link>
-            </div>
-          </div>
+            </Link>
+          </nav>
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="main-content">
           <Outlet />
         </div>
       </main>
-      <footer>
-        <div className="max-w-7xl mx-auto px-6 py-4">Footer</div>
+
+      {/* Footer */}
+      <footer className="main-footer">
+        <div className="main-footer__inner">
+          <div className="main-footer__grid">
+            {/* Brand */}
+            <div className="main-footer__brand">
+              <div className="main-footer__brand-logo">
+                <div className="main-footer__brand-icon">
+                  <BookOpen size={20} />
+                </div>
+                <span className="main-footer__brand-name">Library SDN302</span>
+              </div>
+              <p className="main-footer__brand-desc">
+                Your digital library companion. Discover, rent, and read
+                thousands of books from our curated collection. Built with ❤️
+                for book lovers.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="main-footer__section-title">Quick Links</h4>
+              <ul className="main-footer__links">
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/books">All Books</Link>
+                </li>
+                <li>
+                  <Link to="/categories">Categories</Link>
+                </li>
+                <li>
+                  <Link to="/authors">Authors</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Account */}
+            <div>
+              <h4 className="main-footer__section-title">Account</h4>
+              <ul className="main-footer__links">
+                <li>
+                  <Link to="/login">Log In</Link>
+                </li>
+                <li>
+                  <Link to="/register">Sign Up</Link>
+                </li>
+                <li>
+                  <Link to="/my-rentals">My Rentals</Link>
+                </li>
+                <li>
+                  <Link to="/profile">Profile</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="main-footer__section-title">Contact</h4>
+              <div className="main-footer__contact-item">
+                <Mail size={15} />
+                <span>library@sdn302.edu.vn</span>
+              </div>
+              <div className="main-footer__contact-item">
+                <Phone size={15} />
+                <span>+84 123 456 789</span>
+              </div>
+              <div className="main-footer__contact-item">
+                <MapPin size={15} />
+                <span>FPT University, Hà Nội</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="main-footer__bottom">
+            <p className="main-footer__copyright">
+              © 2026 Library SDN302. All rights reserved.
+            </p>
+            <div className="main-footer__socials">
+              <a href="#" className="main-footer__social-link" title="Source">
+                <ExternalLink size={16} />
+              </a>
+              <a href="#" className="main-footer__social-link" title="Support">
+                <Heart size={16} />
+              </a>
+              <a href="#" className="main-footer__social-link" title="Website">
+                <Globe size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );

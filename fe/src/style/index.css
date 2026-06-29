@@ -61,7 +61,7 @@ body{
 }
 
 .bg-surface{
-  background-color: var(--color-text);
+  background-color: var(--color-surface);
 }
 
 .text-primary{
@@ -83,3 +83,7 @@ body{
 .shadow-shadow-sm{
   box-shadow: var(--shadow-sm);
 }
+
+@import "./login.css";
+@import "./layout.css";
+@import "./cart.css";
