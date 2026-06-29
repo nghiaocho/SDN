@@ -58,3 +58,23 @@
     color: var(--text);
     font-family: var(--font-family)
 }
+
+.bg-primary{
+  background-color: var(--bg);
+}
+
+.bg-white{
+  background-color: var(--text);
+}
+
+.text-primary{
+  color: var(--text)
+}
+
+.text-black{
+  color: var(--bg)
+}
+
+.border-radius-sm{
+  border-radius: var(--radius-sm);
+}
