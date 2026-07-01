@@ -20,4 +20,11 @@ export const register = async (fullname, email, password) => {
 export const getUserInfo = async () => {
     const rs = await api.get("/users/me");
     return rs.data;
+}
+
+export const updateProfile = async (fullname, email, password) => {
+    const rs = await api.put("/users/me", {
+        fullname, email, password
+    });
+    return rs.data;
 }

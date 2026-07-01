@@ -10,19 +10,19 @@ const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalBooksCount, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-       try {
-           const info = await authService.getUserInfo();
-           setUserInfo(info);
-       } catch (err) {
-           console.error("Failed to fetch user info", err);
-       }
+      try {
+        const info = await authService.getUserInfo();
+        setUserInfo(info);
+      } catch (err) {
+        console.error("Failed to fetch user info", err);
+      }
     };
     fetchUserInfo();
   }, []);
@@ -33,10 +33,10 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
-    
+
     if (isOverQuota) {
-        setError(`You only have ${rentalQuota} rental quota remaining, but your cart has ${totalBooks} books.`);
-        return;
+      setError(`You only have ${rentalQuota} rental quota remaining, but your cart has ${totalBooks} books.`);
+      return;
     }
 
     setLoading(true);
@@ -44,13 +44,13 @@ const Cart = () => {
 
     try {
       const itemsPayload = cartItems.map(item => ({
-          book_id: item.book._id,
-          quantity: item.quantity
+        book_id: item.book._id,
+        quantity: item.quantity
       }));
 
       await rentalService.createRental(user.id || user._id, itemsPayload);
       clearCart();
-      navigate("/my-rentals", { state: { success: "Rental request submitted successfully! Pending staff approval." } });
+      navigate("/profile", { state: { success: "Rental request submitted successfully! Pending staff approval." } });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to submit rental request. Please try again.");
     } finally {
@@ -81,11 +81,11 @@ const Cart = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-      
+
       {error && (
         <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg mb-6 flex items-start gap-3">
-            <AlertCircle className="shrink-0 mt-0.5" size={18} />
-            <p>{error}</p>
+          <AlertCircle className="shrink-0 mt-0.5" size={18} />
+          <p>{error}</p>
         </div>
       )}
 
@@ -94,8 +94,8 @@ const Cart = () => {
         <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => (
             <div key={item.book._id} className="bg-surface rounded-xl p-4 border border-border flex gap-4 relative pr-12">
-              <img 
-                src={`/images/${item.book.cover_image}.jpg`} 
+              <img
+                src={`/images/${item.book.cover_image}.jpg`}
                 alt={item.book.title}
                 className="w-20 h-28 object-cover rounded-md"
                 onError={(e) => { e.target.src = "https://via.placeholder.com/80x120?text=No+Cover" }}
@@ -107,16 +107,16 @@ const Cart = () => {
                   </Link>
                   <p className="text-text-muted text-sm">{item.book.author_id?.name || "Unknown Author"}</p>
                 </div>
-                
+
                 <div className="flex items-center gap-4 mt-4">
                   <div className="flex items-center bg-bg border border-border rounded-lg overflow-hidden">
-                    <button 
+                    <button
                       className="px-3 py-1 hover:bg-surface transition-colors"
                       onClick={() => updateQuantity(item.book._id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                     >-</button>
                     <span className="px-3 font-medium text-sm">{item.quantity}</span>
-                    <button 
+                    <button
                       className="px-3 py-1 hover:bg-surface transition-colors"
                       onClick={() => updateQuantity(item.book._id, item.quantity + 1)}
                       disabled={item.quantity >= item.book.available_quantity}
@@ -127,8 +127,8 @@ const Cart = () => {
                   </span>
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 className="absolute top-4 right-4 text-text-muted hover:text-error transition-colors p-2"
                 onClick={() => removeFromCart(item.book._id)}
                 title="Remove from cart"
@@ -143,7 +143,7 @@ const Cart = () => {
         <div className="lg:col-span-1">
           <div className="bg-surface rounded-xl border border-border p-6 sticky top-24">
             <h3 className="text-xl font-bold mb-6 pb-4 border-b border-border">Rental Summary</h3>
-            
+
             <div className="space-y-4 mb-6">
               <div className="flex justify-between">
                 <span className="text-text-muted">Total Books</span>
@@ -157,30 +157,30 @@ const Cart = () => {
               </div>
               <div className="flex justify-between items-start">
                 <span className="text-text-muted flex items-center gap-1">
-                    <Calendar size={14}/> Expected Return
+                  <Calendar size={14} /> Expected Return
                 </span>
                 <span className="font-semibold text-right">
-                    {returnDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}<br/>
-                    <span className="text-xs text-text-muted font-normal">(Max 7 days)</span>
+                  {returnDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}<br />
+                  <span className="text-xs text-text-muted font-normal">(Max 7 days)</span>
                 </span>
               </div>
             </div>
 
             {isOverQuota && (
-                <div className="text-xs text-error mb-4 bg-error/10 p-2 rounded">
-                    Cannot checkout. Exceeds your rental quota.
-                </div>
+              <div className="text-xs text-error mb-4 bg-error/10 p-2 rounded">
+                Cannot checkout. Exceeds your rental quota.
+              </div>
             )}
 
-            <button 
+            <button
               className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleCheckout}
               disabled={loading || isOverQuota}
             >
               {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
-                  <>Submit Rental Request <ArrowRight size={18} /></>
+                <>Submit Rental Request <ArrowRight size={18} /></>
               )}
             </button>
             <p className="text-xs text-center text-text-muted mt-4">

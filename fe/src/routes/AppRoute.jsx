@@ -9,7 +9,7 @@ import ForgotPassword from "../page/ForgotPassword";
 import BookDetail from "../page/BookDetail";
 import Books from "../page/Books";
 import Cart from "../page/Cart";
-import MyRentals from "../page/MyRentals";
+import Profile from "../page/Profile";
 
 const AppRoute = () => {
   return (
@@ -23,7 +23,7 @@ const AppRoute = () => {
           <Route path="/books" element={<Books />} />
           <Route path="/books/:id" element={<BookDetail />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/my-rentals" element={<MyRentals />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
     </Routes>

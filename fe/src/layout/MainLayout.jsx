@@ -165,9 +165,6 @@ const MainLayout = () => {
                   <Link to="/register">Sign Up</Link>
                 </li>
                 <li>
-                  <Link to="/my-rentals">My Rentals</Link>
-                </li>
-                <li>
                   <Link to="/profile">Profile</Link>
                 </li>
               </ul>
