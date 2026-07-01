@@ -52,9 +52,38 @@ const getInfo = async(req, res) =>{
     }
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const { fullname, email, password } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        if (fullname) user.fullname = fullname;
+        if (email) user.email = email;
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.password = hashedPassword;
+        }
+
+        await user.save();
+        
+        // Remove password from response
+        const userObj = user.toObject();
+        delete userObj.password;
+
+        res.status(200).json({ message: "Profile updated successfully", user: userObj });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllUsers,
     register,
     login,
-    getInfo
+    getInfo,
+    updateProfile
 };
